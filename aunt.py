@@ -11,6 +11,8 @@ class Langton(Frame):
     tgrid = None
     cx = None
     cy = None
+    # Keeps track of the entry widget for moving purposes
+    ent = None
     # N E S W
     # 0 1 2 3
     # Initialize the facing direction to West (left) to start
@@ -20,8 +22,11 @@ class Langton(Frame):
         # Tkinter parent frame init
         Frame.__init__(self, parent, width=100, height=100, background="gray")
         self.parent = parent
-        b = Button(parent, text="Run", command=self.run)
-        b.pack(anchor=CENTER, side=BOTTOM)
+        i = IntVar()
+        self.ent = Entry(parent, textvariable=i)
+        self.ent.pack(anchor=CENTER, side=BOTTOM)
+        self.run = Button(parent, text="Run", command=self.click())
+        self.run.pack(anchor=CENTER, side=BOTTOM)
 
         # Child frame init
         self.gridFrame = Frame(parent)
@@ -77,9 +82,19 @@ class Langton(Frame):
             exit(1)
         self.tgrid[self.cx][self.cy]["bg"] = "green"
 
-    def run(self):
-        self.move()
-        self.turn()
+    def click(self):
+        steps = int(self.ent.get())
+        self.run(steps)
+
+    def run(self, steps):
+        if steps <= 0:
+            return
+        else:
+            for i in range(steps):
+                self.move()
+                self.turn()
+                steps -= 1
+                self.master.after(50, self.run, steps)
 
     def initui(self):
         self.parent.title("Langton's Ant")
