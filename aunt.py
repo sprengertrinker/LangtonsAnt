@@ -11,7 +11,6 @@ class Langton(Frame):
     tgrid = None
     cx = None
     cy = None
-    # Keeps track of the entry widget for moving purposes
     ent = None
     # N E S W
     # 0 1 2 3
@@ -25,8 +24,8 @@ class Langton(Frame):
         i = IntVar()
         self.ent = Entry(parent, textvariable=i)
         self.ent.pack(anchor=CENTER, side=BOTTOM)
-        self.run = Button(parent, text="Run", command=self.click())
-        self.run.pack(anchor=CENTER, side=BOTTOM)
+        b = Button(parent, text="Run", command=self.run)
+        b.pack(anchor=CENTER, side=BOTTOM)
 
         # Child frame init
         self.gridFrame = Frame(parent)
@@ -82,19 +81,18 @@ class Langton(Frame):
             exit(1)
         self.tgrid[self.cx][self.cy]["bg"] = "green"
 
-    def click(self):
+    def run(self):
         steps = int(self.ent.get())
-        self.run(steps)
+        self.step(steps)
 
-    def run(self, steps):
+    def step(self, steps):
         if steps <= 0:
             return
         else:
-            for i in range(steps):
-                self.move()
-                self.turn()
-                steps -= 1
-                self.master.after(50, self.run, steps)
+            self.move()
+            self.turn()
+            steps -= 1
+            self.parent.after(500, self.step, steps)
 
     def initui(self):
         self.parent.title("Langton's Ant")
