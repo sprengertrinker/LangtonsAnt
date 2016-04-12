@@ -50,21 +50,27 @@ class Langton(Frame):
         self.tgrid[self.cx][self.cy]["bg"] = "green"
         self.cgrid[self.cx][self.cy] = 1
 
-        self.centerwindow()
+        self.centerwindow(size)
         self.initui()
 
     def turn(self):
-        if self.cgrid[self.cx][self.cy] == 0:
+        direction = ["North", "East", "South", "West"]
+        tmp = self.cgrid[self.cx][self.cy]
+        if tmp == 0:
             self.cgrid[self.cx][self.cy] = 1
             self.facing = (self.facing + 1) % 4
-        else:
+        elif tmp == 1:
             self.cgrid[self.cx][self.cy] = 0
-            self.facing = (self.facing + 3) % 4
+            self.facing = (self.facing - 1) % 4
+        else:
+            print("That's a cgrid error, current grid position = " + str(tmp))
+            exit(1)
 
     def move(self):
-        if self.cgrid[self.cx][self.cy] == 0:
+        tmp = self.cgrid[self.cx][self.cy]
+        if tmp == 0:
             self.tgrid[self.cx][self.cy]["bg"] = "white"
-        if self.cgrid[self.cx][self.cy] == 1:
+        elif tmp == 1:
             self.tgrid[self.cx][self.cy]["bg"] = "black"
 
         # N - E - S - W
@@ -98,10 +104,9 @@ class Langton(Frame):
         self.parent.title("Langton's Ant")
 
     # Centers initial window on the screen
-    def centerwindow(self):
-        w = 400
-        h = 400
-
+    def centerwindow(self, size):
+        w = 40 * size
+        h = 40 * size
         sw = self.parent.winfo_screenwidth()
         sh = self.parent.winfo_screenheight()
 
@@ -112,7 +117,7 @@ class Langton(Frame):
 
 def main():
     root = Tk()
-    app = Langton(root, 10)
+    app = Langton(root, 20)
     root.mainloop()
 
 main()
