@@ -5,23 +5,6 @@ import math
 __author__ = 'Mochla'
 
 
-class Ant:
-    def __init__(self, xp, yp, facing=0):
-        # Facing : N E S W
-        #          0 1 2 3
-        self.x_pos = xp
-        self.y_pos = yp
-        self.facing = facing
-
-    def turn(self, square_bg):
-        # White square -> turn right
-        if square_bg == self.light_color:
-            self.facing = (self.facing + 1) % 4
-        # Black square -> turn left
-        else:
-            self.facing = (self.facing - 1) % 4
-
-
 class Langton(Frame):
     def __init__(self, parent):
         self.parent = parent
@@ -44,7 +27,7 @@ class Langton(Frame):
         self.step_speed = 500  # milliseconds
         self.fastest_speed = 10  # milliseconds
         self.slowest_speed = 10000  # milliseconds
-        self.label_size = "4"  # This is text size...
+        self.label_size = 10  # This is text size...
         self.ant_x = int(self.mid_point)
         self.ant_y = int(self.mid_point)
         # Facing : N E S W
@@ -65,7 +48,7 @@ class Langton(Frame):
             self.parent.grid_frame.grid_rowconfigure(i, weight=1)
             for j in range(self.grid_size):
                 self.parent.grid_frame.grid_columnconfigure(j, weight=1)
-                w = Label(self.parent.grid_frame, text=" ", bg=self.light_color, font=self.label_font)
+                w = Frame(self.parent.grid_frame, bg=self.light_color, width=self.label_size, height=self.label_size)
                 w.grid(row=i, column=j)
                 self.label_grid[i][j] = w
                 
@@ -73,12 +56,12 @@ class Langton(Frame):
         self.label_grid[self.ant_x][self.ant_y]["bg"] = self.ant_color
 
         # Control Frame elements
-        self.slower = Button(self.parent.ctrl_frame, text="<< Slow", command=self.slowDown).pack(anchor=CENTER, side=LEFT)
+        self.slower = Button(self.parent.ctrl_frame, text="<< Slower", command=self.slowDown).pack(anchor=CENTER, side=LEFT)
         self.start = Button(self.parent.ctrl_frame, text="Start", command=self.startMoving).pack(anchor=CENTER, side=LEFT)
         self.stop = Button(self.parent.ctrl_frame, text="Stop", command=self.stopMoving).pack(anchor=CENTER, side=LEFT)
-        self.faster = Button(self.parent.ctrl_frame, text="Fast >>", command=self.speedUp).pack(anchor=CENTER, side=LEFT)
+        self.faster = Button(self.parent.ctrl_frame, text="Faster >>", command=self.speedUp).pack(anchor=CENTER, side=LEFT)
 
-        self.centerWindow(self.grid_size)
+        self.centerWindow()
 
     def antTurn(self):
         # White square -> turn right
@@ -124,15 +107,14 @@ class Langton(Frame):
             self.label_grid[self.ant_x][self.ant_y]["bg"] = "green"
 
     # Centers initial window on the screen
-    def centerWindow(self, size):
-        w = 15 * size
-        h = 15 * size
+    def centerWindow(self):
+        s = self.label_size * self.grid_size + 100  # Grid size + 100px buffer
         sw = self.parent.winfo_screenwidth()
         sh = self.parent.winfo_screenheight()
 
-        x = (sw - w) / 2
-        y = (sh - h) / 2
-        self.parent.geometry('%dx%d+%d+%d' % (w, h, x, y))
+        x = (sw - s) / 2
+        y = (sh - s) / 2
+        self.parent.geometry('%dx%d+%d+%d' % (s, s, x, y))
 
     # Slow down the movement of the ant - down to a minimum speed
     def slowDown(self):
